@@ -4097,7 +4097,7 @@ var
 
 type
   //keep ordered by release date
-  TwbGameMode   = (gmTES3, gmTES4, gmFO3, gmFNV, gmTES5, gmEnderal, gmFO4, gmSSE, gmTES5VR, gmFO4VR, gmFO76);
+  TwbGameMode   = (gmTES3, gmTES4, gmFO3, gmFNV, gmFrontier, gmTES5, gmEnderal, gmFO4, gmSSE, gmTES5VR, gmFO4VR, gmFO76);
   TwbGameModes  = set of TwbGameMode;
 
   TwbToolMode   = (tmView, tmEdit, tmDump, tmExport, tmOnamUpdate, tmMasterUpdate, tmMasterRestore, tmLODgen, tmScript,
@@ -4165,6 +4165,7 @@ var
     gmTES4,
     gmFO3,
     gmFNV,
+    gmFrontier,
     gmTES5,
     gmEnderal];
 
@@ -4736,7 +4737,7 @@ end;
 
 function wbIsFallout3: Boolean; inline;
 begin
-  Result := wbGameMode in [gmFO3, gmFNV];
+  Result := wbGameMode in [gmFO3, gmFNV, gmFrontier];
 end;
 
 function wbIsFallout4: Boolean; inline;

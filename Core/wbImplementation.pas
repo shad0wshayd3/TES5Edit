@@ -8315,6 +8315,7 @@ var
         gmEnderal        : BasePtr.mrsVersion^ := 43;
         gmFNV            : BasePtr.mrsVersion^ := 15;
         gmFO3            : BasePtr.mrsVersion^ := 15;
+        gmFrontier       : BasePtr.mrsVersion^ := 15;
         else               BasePtr.mrsVersion^ := 15;
       end;
       BasePtr.mrsVCS2^ := DefaultVCS2;

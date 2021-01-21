@@ -1887,6 +1887,7 @@ begin
     AddConst(cUnit, 'gmTES5VR', ord(gmTES5VR));
     AddConst(cUnit, 'gmFO3', ord(gmFO3));
     AddConst(cUnit, 'gmFNV', ord(gmFNV));
+    AddConst(cUnit, 'gmFrontier', ord(gmFrontier));
     AddConst(cUnit, 'gmFO4', ord(gmFO4));
     AddConst(cUnit, 'gmFO4VR', ord(gmFO4VR));
     AddConst(cUnit, 'gmFO76', ord(gmFO76));

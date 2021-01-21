@@ -1157,10 +1157,10 @@ begin
     // TMemIniFile reads from string list directly, not supported by MO
     with TIniFile.Create(iniName) do try
       with TStringList.Create do try
-        if wbGameMode in [gmTES4, gmFO3, gmFNV] then begin
+        if wbGameMode in [gmTES4, gmFO3, gmFNV, gmFrontier] then begin
           s := StringReplace(ReadString('Archive', 'sArchiveList', ''), ',' ,#10, [rfReplaceAll]);
           // Update.bsa is hardcoded to load in FNV
-          if wbGameMode = gmFNV then begin
+          if wbGameMode in [gmFNV, gmFrontier] then begin
             if s <> '' then s := s + #10;
             s := s + 'Update.bsa';
           end;

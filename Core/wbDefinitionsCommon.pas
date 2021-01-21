@@ -535,7 +535,8 @@ begin
     .IncludeFlagOnValue(dfSummaryMembersNoName)
     .IncludeFlag(dfCollapsed);
 
-  if wbGameMode <= gmFNV then
+  // Was gmFNV but is now gmFrontier
+  if wbGameMode <= gmFrontier then
     wbCinematicIMAD :=
       wbRStruct('Cinematic', [
         wbTimeInterpolatorsMultAdd(_11_IAD, _51_IAD, 'Saturation'),
@@ -743,7 +744,7 @@ begin
     );
 
   wbRegionSounds :=
-    wbArrayS(IfThen(wbGameMode in [gmTES4, gmFO3, gmFNV], RDSD, RDSA), 'Sounds', wbStructSK([0], 'Sound', [
+    wbArrayS(IfThen(wbGameMode in [gmTES4, gmFO3, gmFNV, gmFrontier], RDSD, RDSA), 'Sounds', wbStructSK([0], 'Sound', [
         wbFormIDCk('Sound', [SNDR, SOUN, NULL]),
         wbInteger('Flags', itU32, wbFlags([
           'Pleasant',
@@ -751,7 +752,7 @@ begin
           'Rainy',
           'Snowy'
         ])),
-        IfThen(wbGameMode in [gmTES4, gmFO3, gmFNV], wbInteger('Chance', itU32, wbScaledInt4ToStr, wbScaledInt4ToInt), wbFloat('Chance'))
+        IfThen(wbGameMode in [gmTES4, gmFO3, gmFNV, gmFrontier], wbInteger('Chance', itU32, wbScaledInt4ToStr, wbScaledInt4ToInt), wbFloat('Chance'))
       ]), 0, cpNormal, False, nil, nil, wbREGNSoundDontShow);
 
   wbSoundDescriptorSounds :=
@@ -876,7 +877,7 @@ begin
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
 
-  if wbGameMode = gmFNV then begin
+  if wbGameMode in [gmFNV, gmFrontier] then begin
     // IsFacingUp, IsLeftUp
     var i := Container.ElementNativeValues['Function'];
     if (i = 106) or (i = 285) then
@@ -1258,7 +1259,7 @@ begin
         wbByteArray('Version Control Info 1', 4, cpIgnore).SetToStr(wbVCI1ToStrAfterFO4)
       ]),
       wbByteArray('Version Control Info 1', 4, cpIgnore).SetToStr(
-        IfThen(wbGameMode in [gmFO3, gmFNV], wbVCI1ToStrBeforeFO4, wbVCI1ToStrAfterFO4)
+        IfThen(wbGameMode in [gmFO3, gmFNV, gmFrontier], wbVCI1ToStrBeforeFO4, wbVCI1ToStrAfterFO4)
       )
     ),
     wbInteger('Form Version', itU16, nil, cpIgnore).IncludeFlag(dfSummaryShowIgnore),
@@ -1343,7 +1344,7 @@ begin
 
   if wbGameMode = gmTES4 then
     wbICON := wbString(ICON, 'Icon FileName')
-  else if wbGameMode = gmFNV then
+  else if wbGameMode in [gmFNV, gmFrontier] then
     wbICON := wbRStruct('Icon', [
       wbString(ICON, 'Large Icon FileName', 0, cpNormal, True),
       wbString(MICO, 'Small Icon FileName')
@@ -1355,11 +1356,11 @@ begin
     ], []);
 
   Result :=
-    wbRStructSK([0], IfThen(wbGameMode in [gmTES4, gmFO3, gmFNV], 'Part', 'Head Part'), [
-      wbInteger(INDX, IfThen(wbGameMode in [gmTES4, gmFO3, gmFNV], 'Index', 'Head Part Number'), itU32, aHeadPartIndexEnum),
-      IfThen(wbGameMode in [gmTES4, gmFO3, gmFNV], aModel, nil),
-      IfThen(wbGameMode in [gmTES4, gmFO3, gmFNV], nil, wbFormIDCk(HEAD, 'Head', [HDPT, NULL])),
-      IfThen(wbGameMode in [gmTES4, gmFO3, gmFNV], wbICON, nil)
+    wbRStructSK([0], IfThen(wbGameMode in [gmTES4, gmFO3, gmFNV, gmFrontier], 'Part', 'Head Part'), [
+      wbInteger(INDX, IfThen(wbGameMode in [gmTES4, gmFO3, gmFNV, gmFrontier], 'Index', 'Head Part Number'), itU32, aHeadPartIndexEnum),
+      IfThen(wbGameMode in [gmTES4, gmFO3, gmFNV, gmFrontier], aModel, nil),
+      IfThen(wbGameMode in [gmTES4, gmFO3, gmFNV, gmFrontier], nil, wbFormIDCk(HEAD, 'Head', [HDPT, NULL])),
+      IfThen(wbGameMode in [gmTES4, gmFO3, gmFNV, gmFrontier], wbICON, nil)
     ], [], cpNormal, False, nil, False, nil, aHeadPartsAfterSet)
     .SetSummaryKey([0, 1])
     .SetSummaryMemberPrefixSuffix(0, '[', ']')
@@ -1720,7 +1721,8 @@ begin
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
-  if wbGameMode > gmFNV then begin
+  // was gmFNV but is now gmFrontier
+  if wbGameMode > gmFrontier then begin
     if not Supports(Container.RecordBySignature[CTDA], IwbContainerElementRef, cerCTDA) then
       Exit;
   end else
@@ -1736,7 +1738,7 @@ begin
 
     var RunOnInt: Integer := RunOn.NativeValue;
 
-    if wbGameMode = gmFNV then begin
+    if wbGameMode in [gmFNV, gmFrontier] then begin
       var FuncInt: Integer := Func.NativeValue;
       if (FuncInt = 106) or (FuncInt = 285) then
         RunOnInt := 0;

@@ -3801,7 +3801,7 @@ begin
       CheckGroup(GroupBySignature['FLST'], ['FormIDs'], [], True);
       CheckGroup(GroupBySignature['CREA'], ['Items', 'Factions'], ['COCT']);
       // FNV doesn't merge DIAL quests properly at runtime
-      if wbGameMode in [gmFNV] then
+      if wbGameMode in [gmFNV, gmFrontier] then
         CheckGroup(GroupBySignature['DIAL'], ['Added Quests'], []);
       // exclude Head Parts for Skyrim, causes issues
       if wbGameMode >= gmTES5 then
@@ -4978,7 +4978,7 @@ begin
               gmFO3:  begin saveExt := '.fos'; coSaveExt := '.fose'; end;
               gmFO4, gmFO4VR:  begin saveExt := '.fos'; coSaveExt := '';      end;
               gmFO76:  begin saveExt := '.fos'; coSaveExt := '';      end;
-              gmFNV:  begin saveExt := '.fos'; coSaveExt := '.nvse'; end;
+              gmFNV, gmFrontier:  begin saveExt := '.fos'; coSaveExt := '.nvse'; end;
               gmTES3: begin saveExt := '.ess'; coSaveExt := '';      end;
               gmTES4: begin saveExt := '.ess'; coSaveExt := '.obse'; end;
               gmTES5, gmEnderal, gmTES5VR, gmSSE: begin saveExt := '.ess'; coSaveExt := '.skse'; end;
@@ -5027,7 +5027,7 @@ begin
           end;
         end;
 
-        if ((wbToolMode in wbPluginModes) or xeQuickClean) and (wbGameMode in [gmTES4, gmFO3, gmFO4, gmFO4VR, gmFO76, gmFNV, gmTES5, gmTES5VR, gmSSE, gmEnderal]) then begin
+        if ((wbToolMode in wbPluginModes) or xeQuickClean) and (wbGameMode in [gmTES4, gmFO3, gmFO4, gmFO4VR, gmFO76, gmFNV, gmFrontier, gmTES5, gmTES5VR, gmSSE, gmEnderal]) then begin
           Modules.DeactivateAll;
 
           if (xePluginToUse <> '') or not xeQuickClean then
@@ -5125,6 +5125,7 @@ begin
         s := sl[0];
         case wbGameMode of
           gmFNV:  if SameText(ExtractFileExt(s), coSaveExt) then xeSwitchToCoSave;
+          gmFrontier: if SameText(ExtractFileExt(s), coSaveExt) then xeSwitchToCoSave;
           gmFO3:  if SameText(ExtractFileExt(s), coSaveExt) then xeSwitchToCoSave
             else begin
               MessageDlg('Save are not supported yet "'+s+'". Please check the selection.', mtError, [mbAbort], 0);
@@ -9810,7 +9811,7 @@ begin
       for i := Low(WorldSpaces) to High(WorldSpaces) do begin
         clbWorldspace.AddItem(WorldSpaces[i].Name, TObject(Pointer(WorldSpaces[i])));
         // default selected worldspace at the top
-        if (WorldSpaces[i].LoadOrderFormID.ToCardinal = $0000003C) or ((wbGameMode = gmFNV) and (WorldSpaces[i].LoadOrderFormID.ToCardinal = $000DA726)) then
+        if (WorldSpaces[i].LoadOrderFormID.ToCardinal = $0000003C) or ((wbGameMode in [gmFNV, gmFrontier]) and (WorldSpaces[i].LoadOrderFormID.ToCardinal = $000DA726)) then
           j := i;
       end;
 
@@ -10764,7 +10765,7 @@ var
       Inc(notDeletedCount);
     end
     // skip refs of TREEs with LOD in FNV
-    else if (wbGameMode in [gmFNV]) and (LinksToRecord.Signature = 'TREE') and LinksToRecord.Flags.HasLODtree then begin
+    else if (wbGameMode in [gmFNV, gmFrontier]) and (LinksToRecord.Signature = 'TREE') and LinksToRecord.Flags.HasLODtree then begin
       Result := False;
       Inc(notDeletedCount);
     end;
@@ -14200,7 +14201,7 @@ begin
   mniNavCleanMasters.Visible := mniNavAddMasters.Visible;
   mniNavBatchChangeReferencingRecords.Visible := mniNavAddMasters.Visible;
   mniNavApplyScript.Visible := mniNavCheckForErrors.Visible;
-  mniNavGenerateLOD.Visible := mniNavCompareTo.Visible and (wbGameMode in [gmTES4, gmFO3, gmFNV, gmTES5, gmEnderal, gmTES5VR, gmSSE, gmFO4, gmFO4VR]);
+  mniNavGenerateLOD.Visible := mniNavCompareTo.Visible and (wbGameMode in [gmTES4, gmFO3, gmFNV, gmFrontier, gmTES5, gmEnderal, gmTES5VR, gmSSE, gmFO4, gmFO4VR]);
 
   mniNavAdd.Clear;
   pmuNavAdd.Items.Clear;
@@ -14321,7 +14322,7 @@ begin
     else
       mniNavLocalizationSwitch.Caption := 'Localize plugin';
 
-  mniNavLogAnalyzer.Visible := (wbGameMode in [gmTES4, gmFO3, gmFNV]) or wbIsSkyrim;
+  mniNavLogAnalyzer.Visible := (wbGameMode in [gmTES4, gmFO3, gmFNV, gmFrontier]) or wbIsSkyrim;
   mniNavLogAnalyzer.Clear;
   if wbIsSkyrim then begin
     MenuItem := TMenuItem.Create(mniNavLogAnalyzer);
@@ -14330,7 +14331,7 @@ begin
     MenuItem.Tag := Integer(ltTES5Papyrus);
     mniNavLogAnalyzer.Add(MenuItem);
   end else
-  if wbGameMode in [gmTES4, gmFO3, gmFNV] then begin
+  if wbGameMode in [gmTES4, gmFO3, gmFNV, gmFrontier] then begin
     MenuItem := TMenuItem.Create(mniNavLogAnalyzer);
     MenuItem.OnClick := mniNavLogAnalyzerClick;
     MenuItem.Caption := 'RuntimeScriptProfiler xSE Extension Log';

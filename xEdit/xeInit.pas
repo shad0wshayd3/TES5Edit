@@ -333,6 +333,7 @@ procedure DoInitPath(const ParamIndex: Integer);
 const
   sBethRegKey             = '\SOFTWARE\Bethesda Softworks\';
   sUninstallRegKey        = '\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\';
+  sFrontierRegKey         = '\Software\FrontierTeamOrSomething'; //TODO: UPDATE WITH REAL VALUE
   sSureAIRegKey           = '\Software\SureAI\';
 
 var
@@ -361,6 +362,10 @@ begin
       gmTES3, gmTES4, gmFO3, gmFNV, gmTES5, gmFO4, gmSSE, gmTES5VR, gmFO4VR: begin
         regPath := sBethRegKey + wbGameNameReg + '\';
       end;
+      gmFrontier: begin //TODO: UPDATE WITH REAL VALUE
+        RootKey := HKEY_CURRENT_USER;
+        regPath := sFrontierRegKey + wbGameNameReg + '\';
+      end;
       gmEnderal: begin
         RootKey := HKEY_CURRENT_USER;
         regPath := sSureAIRegKey + wbGameNameReg + '\';
@@ -382,7 +387,7 @@ begin
       end;
 
       case wbGameMode of
-      gmTES3, gmTES4, gmFO3, gmFNV, gmTES5, gmFO4, gmSSE, gmTES5VR, gmFO4VR:
+      gmTES3, gmTES4, gmFO3, gmFNV, gmFrontier, gmTES5, gmFO4, gmSSE, gmTES5VR, gmFO4VR: //TODO: UPDATE WITH REAL VALUE
                   regKey := 'Installed Path';
       gmEnderal:  regKey := 'Install_Path';
       gmFO76:     regKey := 'Path';
@@ -431,7 +436,7 @@ begin
       wbMyGamesTheGamePath := xeMyProfileName + 'My Games\' + wbGameName2 + '\';
     end;
 
-    if wbGameMode in [gmFO3, gmFNV] then
+    if wbGameMode in [gmFO3, gmFNV, gmFrontier] then
       wbTheGameIniFileName := wbMyGamesTheGamePath + 'Fallout.ini'
     else
       wbTheGameIniFileName := wbMyGamesTheGamePath + wbGameName + '.ini';
@@ -507,7 +512,7 @@ var
 procedure DetectAppMode;
 const
   SourceModes : array of string = ['plugins', 'saves'];
-  GameModes: array of string = ['tes5vr', 'fo4vr', 'tes3', 'tes4', 'tes5', 'enderal', 'sse', 'fo3', 'fnv', 'fo4', 'fo76'];
+  GameModes: array of string = ['tes5vr', 'fo4vr', 'tes3', 'tes4', 'tes5', 'enderal', 'sse', 'fo3', 'fnv', 'frontier', 'fo4', 'fo76'];
   ToolModes: array of string = [
     'edit', 'view', 'lodgen', 'script', 'translate', 'onamupdate', 'masterupdate', 'masterrestore',
     'setesm', 'clearesm', 'sortandclean', 'sortandcleanmasters',
@@ -690,6 +695,17 @@ begin
     ToolSources := [tsPlugins, tsSaves];
   end
 
+  else if isMode('Frontier') then begin
+    wbGameMode := gmFrontier;
+    wbAppName := 'Frontier';
+    wbGameName := 'Frontier';
+    wbGameExeName := 'FalloutNV';
+    wbGameName2 := 'FalloutNV'; //TODO: UPDATE WITH REAL VALUE
+    wbGameMasterEsm := 'FalloutNV.esm';
+    ToolModes := wbAlwaysMode + [tmMasterUpdate, tmMasterRestore];
+    ToolSources := [tsPlugins, tsSaves];
+  end
+
   else if isMode('FO3') then begin
     wbGameMode := gmFO3;
     wbAppName := 'FO3';
@@ -801,7 +817,7 @@ begin
 
   wbGameExeName := wbGameExeName + csDotExe;
 
-  if wbGameMode in [gmFO3, gmFNV] then begin
+  if wbGameMode in [gmFO3, gmFNV, gmFrontier] then begin
     wbUDRSetZ := False;
     wbUDRSetZValue := -15000;
   end;
@@ -844,6 +860,11 @@ begin
   // specific Game settings
   case wbGameMode of
     gmFNV: begin
+      wbVWDInTemporary := True;
+      wbLoadBSAs := False;
+      wbCanSortINFO := True;
+    end;
+    gmFrontier: begin
       wbVWDInTemporary := True;
       wbLoadBSAs := False;
       wbCanSortINFO := True;
@@ -1073,6 +1094,10 @@ begin
       tsSaves:   DefineFNVSaves;
       tsPlugins: DefineFNV;
     end;
+    gmFrontier: case wbToolSource of
+      tsSaves:   DefineFNVSaves;
+      tsPlugins: DefineFNV;
+    end;
     gmFO3: case wbToolSource of
       tsSaves:   DefineFO3Saves;
       tsPlugins: DefineFO3;
@@ -1259,6 +1284,7 @@ procedure xeSwitchToCoSave;
 begin
   case wbGameMode of
     gmFNV:  SwitchToFNVCoSave;
+    gmFrontier: SwitchToFNVCoSave;
     gmFO3:  SwitchToFO3CoSave;
     gmTES4: SwitchToTES4CoSave;
     gmTES5: SwitchToTES5CoSave;
